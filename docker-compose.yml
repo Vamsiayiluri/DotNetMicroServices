@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+
+  identity:
+    build:
+      context: .
+      dockerfile: IdentityService/API/Dockerfile
+    container_name: identity
+    ports:
+      - "5001:8080"
+    depends_on:
+      - sqlserver
+
+  product:
+    build:
+      context: .
+      dockerfile: ProductService/API/Dockerfile
+    container_name: product
+    ports:
+      - "5002:8080"
+    depends_on:
+      - sqlserver
+
+  order:
+    build:
+      context: .
+      dockerfile: OrderService/API/Dockerfile
+    container_name: order
+    ports:
+      - "5003:8080"
+    depends_on:
+      - product
+      - identity
+
+  apigateway:
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    container_name: apigateway
+    ports:
+      - "5000:8080"
+    depends_on:
+      - identity
+      - product
+      - order
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "Your_password123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+volumes:
+  sql_data:
