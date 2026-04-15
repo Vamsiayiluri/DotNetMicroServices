@@ -10,14 +10,14 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ Add Controllers (IMPORTANT)
+//Add Controllers (IMPORTANT)
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));
-// ✅ Register DbContext
+//Register DbContext
 builder.Services.AddDbContext<IdentityDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -43,7 +43,7 @@ builder.Services.AddAuthentication(options =>
             Encoding.UTF8.GetBytes(jwtSettings.Secret))
     };
 });
-// ✅ Swagger (for testing APIs)
+//Swagger (for testing APIs)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -60,7 +60,7 @@ using (var scope = app.Services.CreateScope())
         try
         {
             db.Database.Migrate();
-            Console.WriteLine("✅ Database migrated successfully");
+            Console.WriteLine("Database migrated successfully");
             break;
         }
         catch (Exception ex)
@@ -72,14 +72,16 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// ✅ Middleware{
+// Middleware{
     app.UseSwagger();
     app.UseSwaggerUI();
 
-
+app.UseAuthentication();
 app.UseAuthorization();
 
-// ✅ Map Controllers (VERY IMPORTANT)
 app.MapControllers();
+
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Add($"http://*:{port}");
 
 app.Run();

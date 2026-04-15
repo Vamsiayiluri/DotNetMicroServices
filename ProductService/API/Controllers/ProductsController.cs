@@ -16,10 +16,8 @@ namespace ProductService.API.Controllers
             _productService = productService;
         }
 
-        // ----------------------------
-        // CREATE PRODUCT
-        // ----------------------------
-        [Authorize] // 🔐 Only logged-in users
+
+        [Authorize] 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProductDto dto)
         {
@@ -31,9 +29,6 @@ namespace ProductService.API.Controllers
             return CreatedAtAction(nameof(GetAll), new { id = result.Id }, result);
         }
 
-        // ----------------------------
-        // GET ALL PRODUCTS
-        // ----------------------------
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAll()
@@ -62,7 +57,7 @@ namespace ProductService.API.Controllers
 
             return NoContent();
         }
-        [Authorize] // 🔥 role-based
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {

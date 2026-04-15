@@ -85,13 +85,13 @@ using (var scope = app.Services.CreateScope())
         try
         {
             db.Database.Migrate();
-            Console.WriteLine("✅ Database migrated successfully");
+            Console.WriteLine("Database migrated successfully");
             break;
         }
         catch (Exception ex)
         {
             retryCount--;
-            Console.WriteLine($"❌ DB not ready. Retrying... {retryCount}");
+            Console.WriteLine($"DB not ready. Retrying... {retryCount}");
             Thread.Sleep(5000);
         }
     }
@@ -100,9 +100,6 @@ using (var scope = app.Services.CreateScope())
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();   
 app.UseAuthorization();

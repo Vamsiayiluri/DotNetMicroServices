@@ -58,7 +58,6 @@ namespace IdentityService.Infrastructure.Services
             var refreshToken = _tokenService.GenerateRefreshToken();
             refreshToken.UserId = user.Id;
 
-            // 🔥 Revoke old tokens (rotation strategy)
             foreach (var token in user.RefreshTokens)
             {
                 token.IsRevoked = true;
@@ -83,7 +82,6 @@ namespace IdentityService.Infrastructure.Services
             if (token == null || token.IsRevoked || token.ExpiryDate < DateTime.UtcNow)
                 throw new Exception("Invalid refresh token");
 
-            // 🔥 Rotate token
             token.IsRevoked = true;
 
             var newRefreshToken = _tokenService.GenerateRefreshToken();

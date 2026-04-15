@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Models;
 using OrderService.Application.Interfaces;
 using OrderService.Infrastructure.Persistence;
 using OrderService.Infrastructure.Services;
@@ -10,29 +9,18 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --------------------
-// Add Controllers
-// --------------------
 builder.Services.AddControllers();
 
-// --------------------
-// Swagger / OpenAPI
-// --------------------
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// --------------------
-// Database (SQL Server)
-// --------------------
 builder.Services.AddHttpClient<ProductClient>();
 
 builder.Services.AddScoped<IOrderService, OrderServiceImpl>();
 
 builder.Services.AddDbContext<OrderDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-// --------------------
-// JWT Authentication
-// --------------------
+
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -81,14 +69,9 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-// --------------------
-// Authorization
-// --------------------
+
 builder.Services.AddAuthorization();
 
-// --------------------
-// Build App
-// --------------------
 var app = builder.Build();
 
 var retryCount = 5;
@@ -102,27 +85,24 @@ using (var scope = app.Services.CreateScope())
         try
         {
             db.Database.Migrate();
-            Console.WriteLine("✅ Database migrated successfully");
+            Console.WriteLine("Database migrated successfully");
             break;
         }
         catch (Exception ex)
         {
             retryCount--;
-            Console.WriteLine($"❌ DB not ready. Retrying... {retryCount}");
+            Console.WriteLine($"DB not ready. Retrying... {retryCount}");
             Thread.Sleep(5000);
         }
     }
 }
 
 
-// --------------------
-// Middleware Pipeline
+
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
-
-app.UseAuthentication();   // ⚠️ MUST come before Authorization
+app.UseAuthentication();   
 app.UseAuthorization();
 
 app.MapControllers();
